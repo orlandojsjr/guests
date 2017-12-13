@@ -35,6 +35,17 @@ func FindGuests(InvitedBy string) Guest {
 }
 
 func CreateGuest(guest Guest) Guest {
+    db, err := sql.Open("mysql", "root:abc123@tcp(127.0.0.1:3306)/guests?parseTime=true")
+    stmt, err := db.Prepare("INSERT INTO guests(name, email, message, amount, invited_by) VALUES(?,?,?,?,?)")
+    if err != nil {
+        log.Fatal(err)
+    }
+    res, err := stmt.Exec(guest.Name, guest.Email, guest.Message, guest.Amount, guest.InvitedBy)
+    if err != nil {
+        log.Fatal(err)
+    }
+    lastId, err := res.LastInsertId()
+    log.Printf("Guest created %d",lastId)
     return guest
 }
 
